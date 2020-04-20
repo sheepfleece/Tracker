@@ -2,5 +2,5 @@ dist-newstyle/
 procedures/
 tags 
 client_session_key.aes
-.sw[pon]
+*.sw[pon]
 .pid
