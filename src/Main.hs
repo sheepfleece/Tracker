@@ -1,23 +1,22 @@
 module Main where
 
 import           Control.Concurrent
-import           Control.Exception        (try)
-import           Control.Monad.IO.Class   (liftIO)
-import qualified Data.ByteString.Char8    as BC
+import           Control.Exception      (try)
+import           Control.Monad.IO.Class (liftIO)
+import qualified Data.ByteString.Char8  as BC
 import           Data.Coerce
-import           System.Exit              (die)
+import           System.Exit            (die)
 
-import           ClassyPrelude.Yesod      hiding (try)
+import           ClassyPrelude.Yesod    hiding (try)
 
-import qualified Database.MySQL.Base      as My
+import qualified Database.MySQL.Base    as My
 import           Network.Socket
-import           Network.Wai              as Wai
+import           Network.Wai            as Wai
 
-import qualified Announce.Request         as Req
-import qualified Announce.Response        as Res
-import           Control.Concurrent.Timer
+import qualified Announce.Request       as Req
+import qualified Announce.Response      as Res
 import           Database.Tracker
-import           Util.BEncode             (BValue)
+import           Util.BEncode           (BValue)
 
 data App = App
     { dbConn :: My.MySQLConn
@@ -56,7 +55,7 @@ respondTo host query = case Req.parse host query of
     mres <- liftIO $ try @SomeException
         $ flip runReaderT (dbConn, announce) $ do
       withPeer
-      fetchForPeer
+      peers
 
     pure $ case mres of
       Left err -> Res.berror $
@@ -67,7 +66,7 @@ respondTo host query = case Req.parse host query of
 main :: IO ()
 main = do
   token <- My.connect connectInfo
-  _ <- repeatedTimer (purge token) (60 * 60 * (10 ^ 6)) -- microseconds
+  _ <- forkIO (purge token (60 * 60 * (10 ^ 6))) -- microseconds
   warp 4000 (App token)
 
 
