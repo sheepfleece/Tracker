@@ -1,0 +1,2 @@
+module Database.Auth where
+

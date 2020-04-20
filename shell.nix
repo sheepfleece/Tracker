@@ -9,6 +9,7 @@ let
     hasktags
     ghc-core
     alex happy
+    hoogle haddock
 
     pkgs.fish
   ];

@@ -11,6 +11,17 @@
   (major1) == 0 && (major2) == 1 && (minor) <= 0)
 #endif /* MIN_VERSION_imageViewer */
 
+/* package aeson-1.4.4.0 */
+#ifndef VERSION_aeson
+#define VERSION_aeson "1.4.4.0"
+#endif /* VERSION_aeson */
+#ifndef MIN_VERSION_aeson
+#define MIN_VERSION_aeson(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  4 || \
+  (major1) == 1 && (major2) == 4 && (minor) <= 4)
+#endif /* MIN_VERSION_aeson */
+
 /* package base-4.12.0.0 */
 #ifndef VERSION_base
 #define VERSION_base "4.12.0.0"
@@ -21,6 +32,28 @@
   (major1) == 4 && (major2) <  12 || \
   (major1) == 4 && (major2) == 12 && (minor) <= 0)
 #endif /* MIN_VERSION_base */
+
+/* package blaze-builder-0.4.1.0 */
+#ifndef VERSION_blaze_builder
+#define VERSION_blaze_builder "0.4.1.0"
+#endif /* VERSION_blaze_builder */
+#ifndef MIN_VERSION_blaze_builder
+#define MIN_VERSION_blaze_builder(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  4 || \
+  (major1) == 0 && (major2) == 4 && (minor) <= 1)
+#endif /* MIN_VERSION_blaze_builder */
+
+/* package http-types-0.12.3 */
+#ifndef VERSION_http_types
+#define VERSION_http_types "0.12.3"
+#endif /* VERSION_http_types */
+#ifndef MIN_VERSION_http_types
+#define MIN_VERSION_http_types(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  12 || \
+  (major1) == 0 && (major2) == 12 && (minor) <= 3)
+#endif /* MIN_VERSION_http_types */
 
 /* package persistent-sqlite-2.9.3 */
 #ifndef VERSION_persistent_sqlite
@@ -33,6 +66,39 @@
   (major1) == 2 && (major2) == 9 && (minor) <= 3)
 #endif /* MIN_VERSION_persistent_sqlite */
 
+/* package shakespeare-2.0.20 */
+#ifndef VERSION_shakespeare
+#define VERSION_shakespeare "2.0.20"
+#endif /* VERSION_shakespeare */
+#ifndef MIN_VERSION_shakespeare
+#define MIN_VERSION_shakespeare(major1,major2,minor) (\
+  (major1) <  2 || \
+  (major1) == 2 && (major2) <  0 || \
+  (major1) == 2 && (major2) == 0 && (minor) <= 20)
+#endif /* MIN_VERSION_shakespeare */
+
+/* package text-1.2.3.1 */
+#ifndef VERSION_text
+#define VERSION_text "1.2.3.1"
+#endif /* VERSION_text */
+#ifndef MIN_VERSION_text
+#define MIN_VERSION_text(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  2 || \
+  (major1) == 1 && (major2) == 2 && (minor) <= 3)
+#endif /* MIN_VERSION_text */
+
+/* package time-1.8.0.2 */
+#ifndef VERSION_time
+#define VERSION_time "1.8.0.2"
+#endif /* VERSION_time */
+#ifndef MIN_VERSION_time
+#define MIN_VERSION_time(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  8 || \
+  (major1) == 1 && (major2) == 8 && (minor) <= 0)
+#endif /* MIN_VERSION_time */
+
 /* package yesod-1.6.0 */
 #ifndef VERSION_yesod
 #define VERSION_yesod "1.6.0"
@@ -43,6 +109,39 @@
   (major1) == 1 && (major2) <  6 || \
   (major1) == 1 && (major2) == 6 && (minor) <= 0)
 #endif /* MIN_VERSION_yesod */
+
+/* package yesod-auth-1.6.8 */
+#ifndef VERSION_yesod_auth
+#define VERSION_yesod_auth "1.6.8"
+#endif /* VERSION_yesod_auth */
+#ifndef MIN_VERSION_yesod_auth
+#define MIN_VERSION_yesod_auth(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  6 || \
+  (major1) == 1 && (major2) == 6 && (minor) <= 8)
+#endif /* MIN_VERSION_yesod_auth */
+
+/* package yesod-auth-oauth2-0.6.1.2 */
+#ifndef VERSION_yesod_auth_oauth2
+#define VERSION_yesod_auth_oauth2 "0.6.1.2"
+#endif /* VERSION_yesod_auth_oauth2 */
+#ifndef MIN_VERSION_yesod_auth_oauth2
+#define MIN_VERSION_yesod_auth_oauth2(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  6 || \
+  (major1) == 0 && (major2) == 6 && (minor) <= 1)
+#endif /* MIN_VERSION_yesod_auth_oauth2 */
+
+/* package yesod-form-1.6.6 */
+#ifndef VERSION_yesod_form
+#define VERSION_yesod_form "1.6.6"
+#endif /* VERSION_yesod_form */
+#ifndef MIN_VERSION_yesod_form
+#define MIN_VERSION_yesod_form(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  6 || \
+  (major1) == 1 && (major2) == 6 && (minor) <= 6)
+#endif /* MIN_VERSION_yesod_form */
 
 /* package yesod-static-1.6.0.1 */
 #ifndef VERSION_yesod_static

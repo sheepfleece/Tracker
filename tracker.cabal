@@ -1,0 +1,84 @@
+cabal-version:       >=1.10
+
+name:                tracker
+version:             0.1.0.0
+-- synopsis:
+-- description:
+-- bug-reports:
+-- license:
+license-file:        LICENSE
+author:              sheepfleece
+maintainer:          rowanmorrison@protonmail.ch
+-- copyright:
+-- category:
+build-type:          Simple
+extra-source-files:  CHANGELOG.md
+
+executable tracker
+  main-is:             Main.hs
+  other-modules:       
+    Announce.Response
+    Announce.Request
+
+    Util.BEncode
+    Util.Hash
+    Util.Types
+
+    Database.Auth
+    Database.Tracker
+
+    Server
+  default-extensions:
+    DataKinds
+    DeriveFunctor
+    FlexibleContexts
+    FlexibleInstances
+    GADTs
+    LambdaCase
+    MultiWayIf
+    NoImplicitPrelude
+    OverloadedStrings
+    PolyKinds
+    QuasiQuotes
+    RankNTypes
+    RecordWildCards
+    ScopedTypeVariables
+    TemplateHaskell
+    TypeApplications
+    TypeFamilies
+    TypeOperators
+    TypeSynonymInstances
+    ViewPatterns
+  build-depends:       
+      base >=4.12 && <4.13
+    , aeson
+    , attoparsec
+    , blaze-builder
+    , bytestring
+    , classy-prelude-yesod
+    , containers
+    , cryptohash-sha1
+    , heredoc
+    , http-types
+    , io-streams
+    , mysql-haskell
+    , timers
+    , network
+    , persistent-sqlite
+    , polysemy
+    , shakespeare
+    , text
+    , time
+    , wai
+    , yesod
+    , yesod-auth
+    , yesod-auth-oauth
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  ghc-options: 
+    -Wall
+
+    -- for now
+    -Wno-name-shadowing
+    -Wno-type-defaults
+    -Wno-unused-imports

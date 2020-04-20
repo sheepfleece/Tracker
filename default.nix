@@ -1,14 +1,20 @@
-{ mkDerivation, base, persistent-sqlite, stdenv, yesod, yesod-bin
-, yesod-static
+{ mkDerivation, aeson, attoparsec, base, blaze-builder, bytestring
+, classy-prelude-yesod, containers, cryptohash-sha1, heredoc
+, http-types, io-streams, mysql-haskell, network, persistent-sqlite
+, polysemy, shakespeare, stdenv, text, time, timers, wai, yesod
+, yesod-auth, yesod-auth-oauth
 }:
 mkDerivation {
-  pname = "imageViewer";
+  pname = "tracker";
   version = "0.1.0.0";
   src = ./.;
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
-    base persistent-sqlite yesod yesod-bin yesod-static
+    aeson attoparsec base blaze-builder bytestring classy-prelude-yesod
+    containers cryptohash-sha1 heredoc http-types io-streams
+    mysql-haskell network persistent-sqlite polysemy shakespeare text
+    time timers wai yesod yesod-auth yesod-auth-oauth
   ];
   license = "unknown";
   hydraPlatforms = stdenv.lib.platforms.none;
