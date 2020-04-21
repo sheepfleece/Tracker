@@ -8,7 +8,7 @@ import           Data.List           (foldl', foldr1)
 import           Data.Maybe          (listToMaybe, mapMaybe)
 
 import           Data.List.NonEmpty  (NonEmpty)
-import qualified Data.List.NonEmpty  as NE (nonEmpty)
+import qualified Data.List.NonEmpty  as NE 
 import qualified Data.Text.Encoding  as TE
 
 
@@ -35,7 +35,7 @@ type FileList a = Either (Directory a) (File a)
 data Directory a = Directory
     { dirName :: a
     , files   :: [File a]
-    , dirs    :: [Directory a]
+    , nextDirs    :: [Directory a]
     }
     deriving (Functor, Foldable, Traversable)
 
@@ -89,7 +89,7 @@ calculateHash = H.hash . B.compose . B.BDictionary
 calculateSize :: FileList a -> Int
 calculateSize = \case
   Right file -> fileSize file
-  Left dir   -> sum (fileSize <$> files dir) + sum (calculateSize . Left <$> dirs dir)
+  Left dir   -> sum (fileSize <$> files dir) + sum (calculateSize . Left <$> nextDirs dir)
 
 singleFileM :: Dictionary -> Maybe (FileList Text)
 singleFileM dict = Right <$> singleM dict
@@ -121,7 +121,7 @@ multiFileM dict = fmap Left $ do
 
   traverse decodeUtf8M dirBS
 
-filesM :: Dictionary -> Maybe [(Pieces, Int)]
+filesM :: Dictionary -> Maybe [(Pieces, File ByteString)]
 filesM dict = do
   bvals <- lookup "files" dict >>= B.list
   fdicts <- traverse B.dictionary bvals
@@ -129,21 +129,28 @@ filesM dict = do
 
 type Pieces = [ByteString]
 
-addFile :: (Pieces, Int) -> Directory ByteString -> Directory ByteString
-addFile ([fileName], fileSize) dir = dir { files = File {..} : files dir }
+addFile :: (Pieces, File ByteString) -> Directory ByteString -> Directory ByteString
+addFile pfile dir = case pfile of
+  ([], file) ->  dir { files = file : files dir }
+  ((p:ps), file) -> case break ((== p) . dirName) ((nextDirs dir)) of 
+    (_, []) -> 
+      let newDir = Directory p [] []
+      in dir { nextDirs = addFile (ps, file) newDir : nextDirs dir }  
+    (ls, (center:rs)) ->
+      dir { nextDirs = ls <> [addFile (ps, file) center] <> rs }
 
-
-parseFile :: Dictionary -> Maybe (Pieces, Int)
+parseFile :: Dictionary -> Maybe (Pieces, File ByteString)
 parseFile dict = do
   path <- pathM dict
-  size <- sizeM dict
-  pure (path, size)
+  fileSize <- sizeM dict
+  let fileName = NE.last path
+      pieces = NE.tail path
 
+  pure (pieces, File {..})
 
-pathM :: Dictionary -> Maybe Pieces
+pathM :: Dictionary -> Maybe (NonEmpty ByteString)
 pathM dict = do
     bvals <- lookup "path" dict >>= B.list
-    traverse B.byteString bvals
-
-
+    pieces <- traverse B.byteString bvals
+    NE.nonEmpty pieces
 
