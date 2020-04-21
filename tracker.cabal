@@ -22,15 +22,16 @@ executable tracker
 
     Util.BEncode
     Util.Hash
-    Util.Types
+    Util.Magnet
 
-    Database.Auth
+    Database.Store
     Database.Tracker
 
     Server
   default-extensions:
     DataKinds
     DeriveFunctor
+    DerivingVia
     FlexibleContexts
     FlexibleInstances
     GADTs
@@ -53,6 +54,7 @@ executable tracker
       base >=4.12 && <4.13
     , aeson
     , attoparsec
+    , bytestring-strict-builder
     , blaze-builder
     , bytestring
     , classy-prelude-yesod

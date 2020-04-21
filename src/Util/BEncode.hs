@@ -1,4 +1,4 @@
-module Util.BEncode (parse, compose, BValue(..)) where
+module Util.BEncode (parse, compose, BValue(..), byteString, list, int, dictionary) where
 
 import           ClassyPrelude.Yesod              hiding (take)
 
@@ -63,4 +63,22 @@ parseDictionary = do
   ls <- many' parseDictionaryElement
   _  <- char 'e'
   pure $ BDictionary $ ls
+
+
+byteString :: BValue -> Maybe ByteString
+byteString (BString v) = Just v
+byteString _           = Nothing
+
+list :: BValue -> Maybe [BValue]
+list (BList ls) = Just ls
+list _          = Nothing
+
+int :: BValue -> Maybe Int
+int (BInteger i) = Just i
+int _            = Nothing
+
+dictionary :: BValue -> Maybe [(ByteString, BValue)]
+dictionary = \case
+  (BDictionary d) -> Just d
+  _               -> Nothing
 

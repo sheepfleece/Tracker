@@ -46,7 +46,6 @@ getAnnounceR = do
 
   Res.encode <$> respondTo host query
 
-
 respondTo :: SockAddr -> Query -> Handler BValue
 respondTo host query = case Req.parse host query of
   Left reason -> pure $ Res.berror reason
