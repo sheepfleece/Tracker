@@ -13,14 +13,16 @@ import qualified Database.MySQL.Base    as My
 import           Network.Socket
 import           Network.Wai            as Wai
 
-import qualified Announce.Request       as Req
-import qualified Announce.Response      as Res
+import qualified Announce               as A
+import           Config
 import           Database.Tracker
 import           Util.BEncode           (BValue)
 
 data App = App
     { dbConn :: My.MySQLConn
+    , config :: Config
     }
+
 
 connectInfo :: My.ConnectInfo
 connectInfo = My.defaultConnectInfoMB4
@@ -44,25 +46,26 @@ getAnnounceR = do
   query <- Wai.queryString <$> waiRequest
   host  <- Wai.remoteHost <$> waiRequest
 
-  Res.encode <$> respondTo host query
+  A.encode <$> respondTo host query
 
 respondTo :: SockAddr -> Query -> Handler BValue
-respondTo host query = case Req.parse host query of
-  Left reason -> pure $ Res.berror reason
+respondTo host query = case A.parse host query of
+  Left reason -> pure $ A.berror reason
   Right announce -> do
     App {..} <- getYesod
     mres <- liftIO . try @RequestException $
       runReaderT (withPeer >> peers) (dbConn, announce)
 
     pure $ case mres of
-      Left err -> Res.berror $
+      Left err -> A.berror $
         (BC.pack . show) err
       Right ((wait, atLeast), peers) ->
-        Res.generalResponse wait atLeast peers
+        A.generalResponse wait atLeast peers
 
 main :: IO ()
 main = do
-  token <- My.connect connectInfo
-  _ <- forkIO (purge token (60 * 60 * (10 ^ 6))) -- microseconds
-  warp 4000 (App token)
+  dbConn <- My.connect connectInfo
+  let config = Config "announce"
+  _ <- forkIO (purge dbConn (60 * 60 * (10 ^ 6))) -- microseconds
+  warp 4000 App {..}
 

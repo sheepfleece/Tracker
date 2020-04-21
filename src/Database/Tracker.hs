@@ -16,7 +16,7 @@ import qualified System.IO.Streams                  as S
 
 import           Text.Heredoc
 
-import           Announce.Request
+import           Announce
 import           Network.Socket
 import           Util.Hash
 
@@ -25,8 +25,8 @@ type SQLQuery = ReaderT (MySQLConn, Announce) IO
 data RequestException = CannotFindTorrent
 
 instance Show RequestException where
-  showsPrec _ \case 
-    CannotFindTorrent -> showString "Unregistered torrent"
+  showsPrec _ = \case
+    CannotFindTorrent -> P.showString "Unregistered torrent"
 
 instance Exception RequestException
 

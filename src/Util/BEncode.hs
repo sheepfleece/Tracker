@@ -9,10 +9,12 @@ import           Data.ByteString                  (ByteString)
 import qualified Data.ByteString                  as BS (length, readFile)
 import qualified Data.ByteString.Char8            as BS (pack)
 
+type Dictionary = [(ByteString, BValue)]
+
 data BValue = BString ByteString
     | BInteger Int
     | BList [BValue]
-    | BDictionary [(ByteString, BValue)]
+    | BDictionary Dictionary
     deriving (Show, Eq)
 
 instance IsString BValue where

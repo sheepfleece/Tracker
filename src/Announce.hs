@@ -1,4 +1,4 @@
-module Announce.Request where
+module Announce where
 
 import           ClassyPrelude.Yesod        hiding (find)
 import           Data.Attoparsec.ByteString
@@ -9,6 +9,7 @@ import           Data.Word
 import qualified Network.Socket             as NS
 import qualified Network.Wai                as NW
 
+import           Util.BEncode
 import           Util.Hash
 
 data Announce = Announce
@@ -64,7 +65,7 @@ find param qs = case L.lookup param qs of
       Just val' -> Right val'
 
 parseSHA1 :: ByteString -> Either ByteString SHA1
-parseSHA1 v = case sha1 v of
+parseSHA1 v = case parseHash v of
   Nothing   -> Left "Is not a valid SHA value"
   Just hash -> Right hash
 
@@ -91,4 +92,27 @@ parseEvent = \case
     Right "stopped" -> Right Stopped
     Right "completed" -> Right Completed
     Right event -> Left $ "Expected event, but got: " <> event
+
+{- Response -}
+
+generalResponse :: Int -> Int -> [ByteString] -> BValue
+generalResponse = response wait atLeastWait
+  where
+    wait = 30 * 60
+    atLeastWait = 30 -- seconds
+
+response :: Int -> Int -> Int -> Int -> [ByteString] -> BValue
+response interval min_int complete_num incomplete_num peers = BDictionary
+  [ ("interval", BInteger interval)
+  , ("min interval", BInteger min_int)
+  , ("complete", BInteger complete_num)
+  , ("incomplete", BInteger incomplete_num)
+  , ("peers", BString (mconcat peers))
+  ]
+
+encode :: BValue -> Text
+encode = T.decodeUtf8 . compose
+
+berror :: ByteString -> BValue
+berror str = BDictionary [("failure reason", BString str)]
 

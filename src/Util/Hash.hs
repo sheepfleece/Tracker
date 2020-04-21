@@ -1,4 +1,4 @@
-module Util.Hash (SHA1, hash, mySQLHash, sha1, infoHash, unSHA1) where
+module Util.Hash (SHA1, hash, mySQLHash, parseHash, unSHA1) where
 
 import           ClassyPrelude.Yesod                hiding (hash)
 import qualified Crypto.Hash.SHA1                   as C
@@ -15,12 +15,8 @@ hash = MkSHA1 . C.hash
 mySQLHash :: SHA1 -> MySQLValue
 mySQLHash = MySQLBytes . unSHA1
 
-sha1 :: ByteString -> Maybe SHA1
-sha1 str
+parseHash :: ByteString -> Maybe SHA1
+parseHash str
   | length str == 20 = Just $ MkSHA1 str
   | otherwise = Nothing
-
-
-infoHash :: B.BValue -> Maybe SHA1
-infoHash = fmap (hash . B.compose) . lookup "info" <=< B.dictionary
 

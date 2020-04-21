@@ -17,17 +17,16 @@ extra-source-files:  CHANGELOG.md
 executable tracker
   main-is:             Main.hs
   other-modules:       
-    Announce.Response
-    Announce.Request
-
+    Announce
+    Config
+    Database.Store
+    Database.Tracker
+    MetaFile
+    Server
     Util.BEncode
     Util.Hash
     Util.Magnet
-
-    Database.Store
-    Database.Tracker
-
-    Server
+    Util.Utility
   default-extensions:
     DataKinds
     DeriveFunctor
@@ -54,23 +53,25 @@ executable tracker
       base >=4.12 && <4.13
     , aeson
     , attoparsec
-    , bytestring-strict-builder
     , blaze-builder
+    -- , filepath-bytestring
     , bytestring
+    , bytestring-strict-builder
     , classy-prelude-yesod
     , containers
     , cryptohash-sha1
+    , filepath
     , heredoc
     , http-types
     , io-streams
     , mysql-haskell
-    , timers
     , network
     , persistent-sqlite
     , polysemy
     , shakespeare
     , text
     , time
+    , timers
     , wai
     , yesod
     , yesod-auth
@@ -84,3 +85,4 @@ executable tracker
     -Wno-name-shadowing
     -Wno-type-defaults
     -Wno-unused-imports
+    -Wno-deprecations

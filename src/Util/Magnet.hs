@@ -10,6 +10,9 @@ newtype Magnet = MkMagnet BS.Builder
 instance Semigroup Magnet where
   (MkMagnet m1) <> (MkMagnet m2) = MkMagnet $ m1 <> "&" <> m2
 
+instance Monoid Magnet where
+  mempty = MkMagnet mempty
+
 (=:) :: BS.Builder -> Text -> Magnet
 name =: option = MkMagnet $ name <> "=" <> option'
   where
