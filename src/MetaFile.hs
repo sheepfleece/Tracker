@@ -1,6 +1,8 @@
 module MetaFile where
 
 import           ClassyPrelude.Yesod hiding (fileSize)
+import           Data.Coerce
+import           Data.Monoid
 
 import           Data.List           (foldl', foldr1)
 import           Data.Maybe          (listToMaybe, mapMaybe)
@@ -17,34 +19,36 @@ import           Util.Utility
 
 type Dictionary = [(ByteString, BValue)]
 
-data MetaFile = MetaFile
-    { info     :: Info
+data MetaFile a = MetaFile
+    { info     :: Info a
     , announce :: [Text]
     }
 
-data Info = Info
+data Info a = Info
     { infoHash :: H.SHA1
     , size     :: Int
-    , fileTree :: FileList
+    , fileTree :: FileList a
     }
 
-type FileList = Either Directory File
+type FileList a = Either (Directory a) (File a)
 
-data Directory = Directory
-    { dirName :: FilePath
-    , files   :: [File]
-    , dirs    :: [Directory]
+data Directory a = Directory
+    { dirName :: a
+    , files   :: [File a]
+    , dirs    :: [Directory a]
     }
+    deriving (Functor, Foldable, Traversable)
 
-data File = File
-    { fileName :: Text
+data File a = File
+    { fileName :: a
     , fileSize :: Int
     }
+    deriving (Functor, Foldable, Traversable)
 
 decodeUtf8M :: ByteString -> Maybe Text
 decodeUtf8M = eitherToMaybe . TE.decodeUtf8'
 
-parseMeta :: BValue -> Maybe MetaFile
+parseMeta :: BValue -> Maybe (MetaFile Text)
 parseMeta bvalue = do
   dict <- B.dictionary bvalue
   info <- infoM dict
@@ -69,28 +73,28 @@ announces bdict = concat $ lots <|> one
     url  <- decodeUtf8M urlc
     pure [url]
 
-infoM :: Dictionary -> Maybe Info
+infoM :: Dictionary -> Maybe (Info Text)
 infoM bvals = do
   fileTree <- fileModeM bvals
   let size = calculateSize fileTree
       infoHash = calculateHash bvals
   pure Info {..}
   where
-   fileModeM :: Dictionary -> Maybe FileList
+   fileModeM :: Dictionary -> Maybe (FileList Text)
    fileModeM bv = singleFileM bv
 
 calculateHash :: Dictionary -> H.SHA1
 calculateHash = H.hash . B.compose . B.BDictionary
 
-calculateSize :: FileList -> Int
+calculateSize :: FileList a -> Int
 calculateSize = \case
   Right file -> fileSize file
   Left dir   -> sum (fileSize <$> files dir) + sum (calculateSize . Left <$> dirs dir)
 
-singleFileM :: Dictionary -> Maybe FileList
+singleFileM :: Dictionary -> Maybe (FileList Text)
 singleFileM dict = Right <$> singleM dict
 
-singleM :: Dictionary -> Maybe File
+singleM :: Dictionary -> Maybe (File Text)
 singleM dict = do
   fileName <- nameM dict >>= decodeUtf8M
   fileSize <- sizeM dict
@@ -102,30 +106,44 @@ nameM = B.byteString <=< lookup "name"
 sizeM :: Dictionary -> Maybe Int
 sizeM = B.int <=< lookup "length"
 
-multiFileM :: Dictionary -> Maybe FileList
-multiFileM dict = fmap Right $ do
+via :: forall a d b c . (Coercible a b, Coercible c d) => (a -> c) -> b -> d
+via f = coerce . f . coerce
+
+multiFileM :: Dictionary -> Maybe (FileList Text)
+multiFileM dict = fmap Left $ do
   name <- nameM dict
   files <- filesM dict
-  undefined
+  let builder :: Directory ByteString -> Directory ByteString
+      builder = via @[Endo (Directory ByteString)] concat (addFile <$> files)
 
--- multiM :: Dictionary -> Maybe (NonEmpty (FilePath,Int))
--- multiM = pathsM <=< filesM
+      dirBS :: Directory ByteString
+      dirBS = builder (Directory name [] [])
 
-filesM :: Dictionary -> Maybe [Dictionary]
-filesM = traverse B.dictionary <=< B.list <=< lookup "files"
+  traverse decodeUtf8M dirBS
 
--- pathsM :: [Dictionary]-> Maybe [(FilePath, Int)]
--- pathsM = mapMaybe ((,) <<$>> pathM <<*>> sizeM)
+filesM :: Dictionary -> Maybe [(Pieces, Int)]
+filesM dict = do
+  bvals <- lookup "files" dict >>= B.list
+  fdicts <- traverse B.dictionary bvals
+  traverse parseFile fdicts
+
+type Pieces = [ByteString]
+
+addFile :: (Pieces, Int) -> Directory ByteString -> Directory ByteString
+addFile ([fileName], fileSize) dir = dir { files = File {..} : files dir }
 
 
+parseFile :: Dictionary -> Maybe (Pieces, Int)
+parseFile dict = do
+  path <- pathM dict
+  size <- sizeM dict
+  pure (path, size)
 
--- -- -- FilePath is represented as a list of directories with a filename at the end
--- -- pathM :: Dictionary -> Maybe FilePath
--- -- pathM
--- --     =   fmap (foldr1 (</>))
--- --     .   (fmap . fmap) (unpack . decodeUtf8)
--- --     .   traverse B.byteString
--- --     <=< NE.nonEmpty
--- --     <=< B.list
--- --     <=< lookup "path"
+
+pathM :: Dictionary -> Maybe Pieces
+pathM dict = do
+    bvals <- lookup "path" dict >>= B.list
+    traverse B.byteString bvals
+
+
 

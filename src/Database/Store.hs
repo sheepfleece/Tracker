@@ -16,7 +16,7 @@ data Torrent = Torrent
     { filename   :: Text
     , contents   :: ByteString
     , magnetLink :: Text
-    , metaFile   :: M.MetaFile
+    , metaFile   :: M.MetaFile Text
     }
 
 torrent :: Text -> Text -> ByteString -> Either Text Torrent

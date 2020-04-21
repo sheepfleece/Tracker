@@ -30,6 +30,8 @@ executable tracker
   default-extensions:
     DataKinds
     DeriveFunctor
+    DeriveFoldable
+    DeriveTraversable
     DerivingVia
     FlexibleContexts
     FlexibleInstances
