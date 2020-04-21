@@ -18,17 +18,16 @@ data Torrent = Torrent
     , hash     :: SHA1
     }
 
+torrent :: Text -> ByteString -> Either Text Torrent
+torrent name file =
+  case B.parse file of
+    Left v -> Left $ pack v
+    Right bval -> Right
+      Torrent name bdata (fromJust (infoHash file))
 
--- torrent :: Text -> ByteString -> Either Text Torrent
--- torrent name file =
---   case B.parse file of
---     Left v -> Left $ pack v
---     Right bval -> Right
---       Torrent name bdata (fromJust (infoHash file))
-
--- iTorrent :: My.Query
--- iTorrent = [here|
--- INSERT Torrent (name, torrent, SHA1) VALUES (?, ?, ?)
--- |]
+iTorrent :: My.Query
+iTorrent = [here|
+INSERT Torrent (name, torrent, SHA1) VALUES (?, ?, ?)
+|]
 
 

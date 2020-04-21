@@ -24,6 +24,3 @@ sha1 str
 infoHash :: B.BValue -> Maybe SHA1
 infoHash = fmap (hash . B.compose) . lookup "info" <=< B.dictionary
 
-
-
-

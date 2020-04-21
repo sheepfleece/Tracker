@@ -10,7 +10,6 @@ import qualified Network.Socket             as NS
 import qualified Network.Wai                as NW
 
 import           Util.Hash
-import           Util.Types
 
 data Announce = Announce
     { info_hash  :: SHA1

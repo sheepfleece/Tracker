@@ -3,10 +3,9 @@ module Util.Magnet (tr, dn, xt, magnet, Magnet) where
 import qualified ByteString.StrictBuilder as BS
 import           ClassyPrelude.Yesod
 import           Data.Char
-import           Data.Map.Merge.Strict
 import           Util.Hash
 
-newtype Magnet = MkMagnet { unMagnet :: BS.Builder }
+newtype Magnet = MkMagnet BS.Builder
 
 instance Semigroup Magnet where
   (MkMagnet m1) <> (MkMagnet m2) = MkMagnet $ m1 <> "&" <> m2
@@ -59,3 +58,4 @@ dn = ("dn" =:)
 
 tr :: Text -> Magnet
 tr = ("tr" =:)
+

@@ -51,10 +51,8 @@ respondTo host query = case Req.parse host query of
   Left reason -> pure $ Res.berror reason
   Right announce -> do
     App {..} <- getYesod
-    mres <- liftIO $ try @SomeException
-        $ flip runReaderT (dbConn, announce) $ do
-      withPeer
-      peers
+    mres <- liftIO . try @RequestException $
+      runReaderT (withPeer >> peers) (dbConn, announce)
 
     pure $ case mres of
       Left err -> Res.berror $
@@ -67,5 +65,4 @@ main = do
   token <- My.connect connectInfo
   _ <- forkIO (purge token (60 * 60 * (10 ^ 6))) -- microseconds
   warp 4000 (App token)
-
 
